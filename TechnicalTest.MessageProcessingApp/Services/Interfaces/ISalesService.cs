@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using TechnicalTest.MessageProcessingApp.Models;
+﻿using TechnicalTest.MessageProcessingApp.Models;
 
 namespace TechnicalTest.MessageProcessingApp.Services.Interfaces;
 

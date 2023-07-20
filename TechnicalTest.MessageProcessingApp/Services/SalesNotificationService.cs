@@ -3,7 +3,6 @@ using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 using TechnicalTest.MessageProcessingApp.Models;
-using TechnicalTest.MessageProcessingApp.Services;
 using Microsoft.Extensions.Configuration;
 using TechnicalTest.MessageProcessingApp.Services.Interfaces;
 

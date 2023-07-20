@@ -1,5 +1,4 @@
 ﻿using TechnicalTest.MessageProcessingApp.Models;
-using TechnicalTest.MessageProcessingApp.Repositories;
 using TechnicalTest.MessageProcessingApp.Repositories.Interfaces;
 using TechnicalTest.MessageProcessingApp.Services.Interfaces;
 
