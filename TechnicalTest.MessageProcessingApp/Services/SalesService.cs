@@ -1,15 +1,17 @@
 ﻿using TechnicalTest.MessageProcessingApp.Models;
 using TechnicalTest.MessageProcessingApp.Repositories;
+using TechnicalTest.MessageProcessingApp.Repositories.Interfaces;
+using TechnicalTest.MessageProcessingApp.Services.Interfaces;
 
 namespace TechnicalTest.MessageProcessingApp.Services;
 
-public class SalesService
+public class SalesService: ISalesService
 {
-    private readonly SalesRepository _salesRepository;
+    private readonly ISalesRepository _salesRepository;
 
-    public SalesService()
+    public SalesService(ISalesRepository salesRepository)
     {
-         _salesRepository = new SalesRepository();
+        _salesRepository = salesRepository;
     }
 
     public bool AddSales(SalesNotification sale)

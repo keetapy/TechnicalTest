@@ -4,22 +4,26 @@ using System.Text;
 using System.Text.Json;
 using TechnicalTest.MessageProcessingApp.Models;
 using TechnicalTest.MessageProcessingApp.Services;
+using Microsoft.Extensions.Configuration;
+using TechnicalTest.MessageProcessingApp.Services.Interfaces;
 
 namespace Services;
 
-public class SalesNotificationService
+public class SalesNotificationService: ISalesNotificationService
 {
     private readonly string _hostname;
     private readonly string _queueName;
-    private readonly SalesService _salesService;
+    private readonly ISalesService _salesService;
     private IModel _channel;
     private int MessagesCount = 0;
 
-    public SalesNotificationService(string hostname, string queueName)
+    public SalesNotificationService(IConfiguration configuration, ISalesService salesService)
     {
+        var hostname = configuration.GetSection("RabbitMq")["HostName"];
+        var queueName = configuration.GetSection("RabbitMq")["QueueName"];
         _hostname = hostname;
         _queueName = queueName;
-        _salesService = new SalesService();
+        _salesService = salesService;
     }
 
     public void StartConsuming()

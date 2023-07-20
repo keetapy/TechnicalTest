@@ -1,8 +1,9 @@
 ﻿using TechnicalTest.MessageProcessingApp.Models;
+using TechnicalTest.MessageProcessingApp.Repositories.Interfaces;
 
 namespace TechnicalTest.MessageProcessingApp.Repositories;
 
-public class SalesRepository
+public class SalesRepository: ISalesRepository
 {
     private List<SalesEntity> _sales { get; set; }
 
