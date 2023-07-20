@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +16,8 @@ public class SalesRepositoryTests
     public void AddSales_WhenProductExists_ShouldUpdateExistingSalesEntity()
     {
         // Arrange
-        var repository = new SalesRepository();
+        var mockLogger = new Mock<ILogger<SalesRepository>>();
+        var repository = new SalesRepository(mockLogger.Object);
         var initialSalesEntity = new SalesEntity { Product = ProductType.Apple, Price = 10, SalesNumber = 5 };
         repository.AddSales(initialSalesEntity);
         var updatedSalesEntity = new SalesEntity { Product = ProductType.Apple, Price = 15, SalesNumber = 3 };
@@ -33,7 +36,8 @@ public class SalesRepositoryTests
     public void AddSales_WhenProductDoesNotExist_ShouldAddNewSalesEntity()
     {
         // Arrange
-        var repository = new SalesRepository();
+        var mockLogger = new Mock<ILogger<SalesRepository>>();
+        var repository = new SalesRepository(mockLogger.Object);
         var salesEntity = new SalesEntity { Product = ProductType.Apple, Price = 10, SalesNumber = 5 };
 
         // Act

@@ -5,6 +5,7 @@ using System.Text.Json;
 using TechnicalTest.MessageProcessingApp.Models;
 using Microsoft.Extensions.Configuration;
 using TechnicalTest.MessageProcessingApp.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Services;
 
@@ -14,15 +15,17 @@ public class SalesNotificationService: ISalesNotificationService
     private readonly string _queueName;
     private readonly ISalesService _salesService;
     private IModel _channel;
+    private readonly ILogger<SalesNotificationService> _logger;
     private int MessagesCount = 0;
 
-    public SalesNotificationService(IConfiguration configuration, ISalesService salesService)
+    public SalesNotificationService(IConfiguration configuration, ISalesService salesService, ILogger<SalesNotificationService> logger)
     {
         var hostname = configuration.GetSection("RabbitMq")["HostName"];
         var queueName = configuration.GetSection("RabbitMq")["QueueName"];
         _hostname = hostname;
         _queueName = queueName;
         _salesService = salesService;
+        _logger = logger;
     }
 
     public void StartConsuming()
@@ -36,8 +39,7 @@ public class SalesNotificationService: ISalesNotificationService
         _channel.BasicConsume(queue: _queueName,
                               autoAck: false,
                               consumer: consumer);
-
-        Console.WriteLine("Press [enter] to exit.");
+        _logger.LogInformation("Consuming started...");
         Console.ReadLine();
     }
 
@@ -80,7 +82,7 @@ public class SalesNotificationService: ISalesNotificationService
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Message was rejected [{0}]", ex.ToString());
+            _logger.LogError("Message was rejected [{0}]", ex.ToString());
             _channel.BasicReject(ea.DeliveryTag, requeue: true);
         }
     }
@@ -95,7 +97,7 @@ public class SalesNotificationService: ISalesNotificationService
     {
         if (notification?.Product is null || notification.Price <= 0)
         {
-            Console.WriteLine("SalesNotification is invalid!");
+            _logger.LogWarning("SalesNotification is invalid!");
             return;
         }
 
@@ -104,20 +106,23 @@ public class SalesNotificationService: ISalesNotificationService
                 ? "Sales were added!"
                 : "Adding data failed!";
 
-        Console.WriteLine(result);
+        _logger.LogInformation(result);
 
         if (MessagesCount % analyticsThreshold == 0)
         {
+            var analyticsResult = new StringBuilder();
             foreach (var item in _salesService.GetAnalytics())
             {
-                Console.WriteLine(item.ToString());
+               analyticsResult.Append(item.ToString()+"\n\t");
             }
+
+            _logger.LogInformation(analyticsResult.ToString());
         }
     }
 
     private void StopConsuming()
     {
-        Console.WriteLine("Application Stop consuming");
+        _logger.LogInformation("Application Stop consuming");
         _channel.Close();
         _channel.Dispose();
     }
