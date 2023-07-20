@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TechnicalTest.MessageProcessingApp.Models;
 using TechnicalTest.MessageProcessingApp.Repositories;
 
@@ -49,5 +44,26 @@ public class SalesRepositoryTests
         Assert.Equal(salesEntity.Product, addedEntity.Product);
         Assert.Equal(salesEntity.Price, addedEntity.Price);
         Assert.Equal(salesEntity.SalesNumber, addedEntity.SalesNumber);
+    }
+
+    [Fact]
+    public void AdjustSales_ShouldApplyAdjustmentToSalesOfSpecifiedProductType()
+    {
+        // Arrange
+        var mockLogger = new Mock<ILogger<SalesRepository>>();
+        var repository = new SalesRepository(mockLogger.Object);
+        var product = ProductType.Apple;
+        var initialSale = new SalesEntity { Product = product, Price = 10, SalesNumber = 5 };
+        repository.AddSales(initialSale);
+        var adjustmentOperation = AdjustmentOperation.Add;
+        var adjustmentAmount = 2.5m;
+
+        // Act
+        repository.AdjustSales(product, adjustmentOperation, adjustmentAmount);
+
+        // Assert
+        var sales = repository.GetAllRecords();
+        var adjustedSale = sales.Single();
+        Assert.Equal(12.5m, adjustedSale.Price);
     }
 }

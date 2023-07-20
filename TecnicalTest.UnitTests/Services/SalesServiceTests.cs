@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,5 +64,22 @@ public class SalesServiceTests
         Assert.Equal(2, analytics.Count());
         Assert.Contains(analytics, x => x.Product == ProductType.Apple && x.SalesNumber == 5 && x.TotalValue == 50);
         Assert.Contains(analytics, x => x.Product == ProductType.Banana && x.SalesNumber == 3 && x.TotalValue == 24);
+    }
+
+    [Fact]
+    public void AdjustSales_ShouldApplyAdjustmentToAllSalesOfProductType()
+    {
+        // Arrange
+        var mockRepository = new Mock<ISalesRepository>();
+        var service = new SalesService(mockRepository.Object);
+        var product = ProductType.Apple;
+        var operation = AdjustmentOperation.Add;
+        var adjustmentAmount = 2;
+
+        // Act
+        service.AdjustSales(product, operation, adjustmentAmount);
+
+        // Assert
+        mockRepository.Verify(r => r.AdjustSales(product, operation, adjustmentAmount), Times.Once);
     }
 }

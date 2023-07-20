@@ -30,6 +30,14 @@ public class SalesService: ISalesService
         return _salesRepository.AddSales(itemToAdd);
     }
 
+    public void AdjustSales(
+        ProductType? product, 
+        AdjustmentOperation? operation, 
+        decimal adjustmentAmount)
+    {
+        _salesRepository.AdjustSales(product, operation, adjustmentAmount);
+    }
+
     public IEnumerable<ReportNotification> GetAnalytics()
     {
         var data = _salesRepository.GetAllRecords();

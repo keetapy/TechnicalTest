@@ -16,30 +16,13 @@ var usersResult = "add";
 
 while (usersResult?.ToLower() != "stop")
 {
-    Console.WriteLine("Product type (0-Apple; 1-Banana): ");
-    var product = Console.ReadLine();
-
-    var productType = product switch
+    switch (usersResult)
     {
-        "0" => ProductType.Apple,
-        "1" => ProductType.Banana,
-        _ => ProductType.Apple
-    };
+        case "0": publisher.AddNewSales(publisher); break;
+        case "1": publisher.AdjustSales(publisher); break;
+    }
 
-    Console.WriteLine("Quantity: ");
-    var quantity = int.Parse(Console.ReadLine());
-
-    Console.WriteLine("Price: ");
-    var price = decimal.Parse(Console.ReadLine());
-
-    publisher.SendNotification(new SalesNotification
-    {
-        Product = productType,
-        Quantity = quantity,
-        Price = price
-    });
-
-    Console.WriteLine("Whould you like to add produt?");
-    Console.WriteLine("Enter \"stop\" to stop app");
+    Console.WriteLine("0 - Add new sales; 1 - AdjustSales");
+    Console.WriteLine("(Enter \"stop\" to stop app)");
     usersResult = Console.ReadLine();
 }
