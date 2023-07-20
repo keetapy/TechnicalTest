@@ -18,7 +18,10 @@ public class SalesNotificationService: ISalesNotificationService
     private readonly ILogger<SalesNotificationService> _logger;
     private int MessagesCount = 0;
 
-    public SalesNotificationService(IConfiguration configuration, ISalesService salesService, ILogger<SalesNotificationService> logger)
+    public SalesNotificationService(
+        IConfiguration configuration, 
+        ISalesService salesService, 
+        ILogger<SalesNotificationService> logger)
     {
         var hostname = configuration.GetSection("RabbitMq")["HostName"];
         var queueName = configuration.GetSection("RabbitMq")["QueueName"];
@@ -101,12 +104,24 @@ public class SalesNotificationService: ISalesNotificationService
             return;
         }
 
-        var analyticsThreshold = 3;
-        var result = _salesService.AddSales(notification)
+        var analyticsThreshold = 10;
+
+        if (notification?.AdjustmentOperation is not null)
+        {
+            _salesService.AdjustSales(
+                notification.Product, 
+                notification.AdjustmentOperation, 
+                notification.Price);
+        }
+        else
+        {
+            var result = _salesService.AddSales(notification)
                 ? "Sales were added!"
                 : "Adding data failed!";
 
-        _logger.LogInformation(result);
+            _logger.LogInformation(result);
+        }
+        
 
         if (MessagesCount % analyticsThreshold == 0)
         {
@@ -122,7 +137,7 @@ public class SalesNotificationService: ISalesNotificationService
 
     private void StopConsuming()
     {
-        _logger.LogInformation("Application Stop consuming");
+        _logger.LogInformation("Application stop consuming");
         _channel.Close();
         _channel.Dispose();
     }

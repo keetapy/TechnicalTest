@@ -3,6 +3,7 @@
     public enum ProductType
     {
         Apple,
-        Banana
+        Banana,
+        None
     }
 }

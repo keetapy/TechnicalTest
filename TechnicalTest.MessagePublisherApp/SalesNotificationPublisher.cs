@@ -38,4 +38,62 @@ public class SalesNotificationPublisher
                              body: body);
         Console.WriteLine("You sent: {0}", message);
     }
+
+    public void AddNewSales(SalesNotificationPublisher publisher)
+    {
+        Console.WriteLine("Product type (0-Apple; 1-Banana): ");
+        var product = Console.ReadLine();
+
+        var productType = product switch
+        {
+            "0" => ProductType.Apple,
+            "1" => ProductType.Banana,
+            _ => ProductType.Apple
+        };
+
+        Console.WriteLine("Quantity: ");
+        var quantity = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Price: ");
+        var price = decimal.Parse(Console.ReadLine());
+
+        publisher.SendNotification(new SalesNotification
+        {
+            Product = productType,
+            Quantity = quantity,
+            Price = price
+        });
+    }
+
+    public void AdjustSales(SalesNotificationPublisher publisher)
+    {
+        Console.WriteLine("Product type (0-Apple; 1-Banana): ");
+        var product = Console.ReadLine();
+        var productType = product switch
+        {
+            "0" => ProductType.Apple,
+            "1" => ProductType.Banana,
+            _ => ProductType.Apple
+        };
+
+        Console.WriteLine("Adjustment operation (+/-/*): ");
+        var operation = Console.ReadLine();
+        var operationType = operation switch
+        {
+            "+" => AdjustmentOperation.Add,
+            "-" => AdjustmentOperation.Subtract,
+            "*" => AdjustmentOperation.Multiply,
+            _ => AdjustmentOperation.Add
+        };
+
+        Console.WriteLine("Adjustment amount: ");
+        var price = decimal.Parse(Console.ReadLine());
+
+        publisher.SendNotification(new SalesNotification
+        {
+            Product = productType,
+            AdjustmentOperation = operationType,
+            Price = price
+        });
+    }
 }

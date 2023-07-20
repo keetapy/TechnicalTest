@@ -64,4 +64,22 @@ public class SalesServiceTests
         Assert.Contains(analytics, x => x.Product == ProductType.Apple && x.SalesNumber == 5 && x.TotalValue == 50);
         Assert.Contains(analytics, x => x.Product == ProductType.Banana && x.SalesNumber == 3 && x.TotalValue == 24);
     }
+
+    [Fact]
+    public void AdjustSales_ShouldApplyAdjustmentToAllSalesOfProductType()
+    {
+        // Arrange
+        var mockRepository = new Mock<ISalesRepository>();
+        var mockLogger = new Mock<ILogger<SalesService>>();
+        var service = new SalesService(mockRepository.Object, mockLogger.Object);
+        var product = ProductType.Apple;
+        var operation = AdjustmentOperation.Add;
+        var adjustmentAmount = 0.20;
+
+        // Act
+        service.AdjustSales(product, operation, adjustmentAmount);
+
+        // Assert
+        mockRepository.Verify(r => r.AdjustSales(product, operation, adjustmentAmount), Times.Once);
+    }
 }
