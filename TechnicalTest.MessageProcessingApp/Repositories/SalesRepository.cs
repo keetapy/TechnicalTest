@@ -1,14 +1,18 @@
-﻿using TechnicalTest.MessageProcessingApp.Models;
+﻿using Microsoft.Extensions.Logging;
+using TechnicalTest.MessageProcessingApp.Models;
+using TechnicalTest.MessageProcessingApp.Repositories.Interfaces;
 
 namespace TechnicalTest.MessageProcessingApp.Repositories;
 
-public class SalesRepository
+public class SalesRepository: ISalesRepository
 {
+    private readonly ILogger<SalesRepository> _logger;
     private List<SalesEntity> _sales { get; set; }
 
-    public SalesRepository()
+    public SalesRepository(ILogger<SalesRepository> logger)
     {
         _sales = new List<SalesEntity>();
+        _logger = logger;
     }
 
     public bool AddSales(SalesEntity sale)
@@ -22,7 +26,7 @@ public class SalesRepository
             return true;
         }
 
-        Console.WriteLine("Added new product type: [{0}]",Enum.GetName(sale.Product));
+        _logger.LogInformation("Added new product type: [{0}]",Enum.GetName(sale.Product));
         _sales.Add(sale);
 
         return true;

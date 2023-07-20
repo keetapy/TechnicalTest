@@ -1,15 +1,34 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Services;
-using TechnicalTest.MessageProcessingApp;
+using TechnicalTest.MessageProcessingApp.Repositories;
+using TechnicalTest.MessageProcessingApp.Repositories.Interfaces;
+using TechnicalTest.MessageProcessingApp.Services;
+using TechnicalTest.MessageProcessingApp.Services.Interfaces;
 
-IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("settings.json", optional: false, reloadOnChange: true)
-                .Build();
+var builder = new HostBuilder().ConfigureAppConfiguration(configuration =>
+{
+    configuration.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("settings.json", optional: false, reloadOnChange: true);
+}).ConfigureServices((hostContext, service) =>
+{
+    service
+        .AddLogging()
+        .AddScoped<ISalesRepository, SalesRepository>()
+        .AddScoped<ISalesNotificationService, SalesNotificationService>()
+        .AddScoped<ISalesService, SalesService>();
+})
+.ConfigureLogging((hostContext, logging) =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+});
 
-var hostname = configuration.GetSection("RabbitMq")["HostName"];
-var queueName = configuration.GetSection("RabbitMq")["QueueName"];
+using IHost host = builder.Build();
 
-var consumer = new SalesNotificationService(hostname, queueName);
-consumer.StartConsuming();
-Console.ReadKey();
+var salesNotificationService = host.Services.GetRequiredService<ISalesNotificationService>();
+salesNotificationService.StartConsuming();
+
+host.Run();
