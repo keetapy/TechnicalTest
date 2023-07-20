@@ -1,4 +1,5 @@
-﻿using Moq;
+﻿using Microsoft.Extensions.Logging;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,11 +71,10 @@ public class SalesServiceTests
     {
         // Arrange
         var mockRepository = new Mock<ISalesRepository>();
-        var mockLogger = new Mock<ILogger<SalesService>>();
-        var service = new SalesService(mockRepository.Object, mockLogger.Object);
+        var service = new SalesService(mockRepository.Object);
         var product = ProductType.Apple;
         var operation = AdjustmentOperation.Add;
-        var adjustmentAmount = 0.20;
+        var adjustmentAmount = 2;
 
         // Act
         service.AdjustSales(product, operation, adjustmentAmount);
